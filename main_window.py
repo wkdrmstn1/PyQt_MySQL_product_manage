@@ -131,6 +131,7 @@ class MainWindow(QMainWindow):
         
         if target_code != self.selected_code:
             QMessageBox.critical(self,"실패","제품코드는 변경이 불가능합니다.")
+            self.clear()
             return 
 
         ok = self.db.change_product(target_code,new_name,new_price,new_amount)

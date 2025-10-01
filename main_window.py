@@ -10,20 +10,40 @@ class MainWindow(QMainWindow):
         central = QWidget()
         self.setCentralWidget(central)
         vbox = QVBoxLayout(central)
-        form_box = QHBoxLayout()
+        form_box1 = QHBoxLayout()
+        form_box2 = QHBoxLayout()
+        #grid_box = QGridLayout()
         
         # 상단 : 입력창, 버튼 
         self.input_code = QLineEdit()
+        form_box1.addWidget(self.input_code)
+        #grid_box.addWidget(self.input_code,0,0)
+        self.input_code.setPlaceholderText("제품코드")
         self.input_name = QLineEdit()
+        form_box1.addWidget(self.input_name)
+        #grid_box.addWidget(self.input_code,0,1)
+        self.input_name.setPlaceholderText("제품명")
         self.input_price = QLineEdit()
+        form_box1.addWidget(self.input_price)
+        #grid_box.addWidget(self.input_code,0,2)
+        self.input_price.setPlaceholderText("가격")
         self.input_amount = QLineEdit()
+        form_box1.addWidget(self.input_amount)
+        #grid_box.addWidget(self.input_code,0,3)
+        self.input_amount.setPlaceholderText("수량")
 
+        self.btn_clear = QPushButton("초기화")
+        self.btn_clear.clicked.connect(self.clear)
+        form_box2.addWidget(self.btn_clear)
         self.btn_add = QPushButton("추가")
         self.btn_add.clicked.connect(self.add_product)
+        form_box2.addWidget(self.btn_add)
         self.btn_change = QPushButton("수정")
         self.btn_change.clicked.connect(self.change_product)
+        form_box2.addWidget(self.btn_change)
         self.btn_delete = QPushButton("삭제")
         self.btn_delete.clicked.connect(self.delete_product)
+        form_box2.addWidget(self.btn_delete)
 
         # 중앙 : 테이블 위젯
         self.table = QTableWidget()
@@ -32,9 +52,20 @@ class MainWindow(QMainWindow):
         self.table.setEditTriggers(self.table.NoEditTriggers)
         self.table.verticalHeader().setVisible(False)
 
-        vbox.addLayout(form_box)
+        #vbox.addLayout(grid_box)
+        vbox.addLayout(form_box1)
+        vbox.addLayout(form_box2)
         vbox.addWidget(self.table)
 
+        self.load_products()
+
+        self.table.cellClicked.connect(self.cell_clicked)
+
+    def clear(self):
+        self.input_code.clear()
+        self.input_name.clear()
+        self.input_price.clear()
+        self.input_amount.clear()
         self.load_products()
 
     # 목록 불러오기
@@ -42,14 +73,17 @@ class MainWindow(QMainWindow):
             rows = self.db.fetch_products()
             self.table.setRowCount(len(rows))
             for r, (code, name, price, amount) in enumerate(rows):
-                self.table.setItem(r,0,QTableWidgetItem(code))
-                self.table.setItem(r,1,QTableWidgetItem(name))
-                self.table.setItem(r,2,QTableWidgetItem(price))
-                self.table.setItem(r,3,QTableWidgetItem(amount))
+                self.table.setItem(r,0,QTableWidgetItem(str(code)))
+                self.table.setItem(r,1,QTableWidgetItem(str(name)))
+                self.table.setItem(r,2,QTableWidgetItem(str(price)))
+                self.table.setItem(r,3,QTableWidgetItem(str(amount)))
             self.table.resizeColumnsToContents()
-    
+            header = self.table.horizontalHeader()
+            header.setSectionResizeMode(QHeaderView.Stretch)
+            
+
     # 제품 추가
-    def add_products(self):
+    def add_product(self):
         code = self.input_code.text().strip()
         name = self.input_name.text().strip()
         price = self.input_price.text().strip()
@@ -69,7 +103,7 @@ class MainWindow(QMainWindow):
             QMessageBox.critical(self,"실패","추가 실패")
 
     # 제품 삭제
-    def delete_products(self):
+    def delete_product(self):
         code = self.input_code.text().strip()
         if not code:
             QMessageBox.warning(self,"오류","존재하지 않는 제품코드입니다")
@@ -104,4 +138,16 @@ class MainWindow(QMainWindow):
             self.input_amount.clear()
             self.load_products()
         else:
-            QMessageBox.critical(self,"실패","삭제실패")
+            QMessageBox.critical(self,"실패","수정실패")
+
+    def cell_clicked(self,row,col):
+        code = self.table.item(row,0).text()
+        name = self.table.item(row,1).text()
+        price = self.table.item(row,2).text()
+        amount = self.table.item(row,3).text()
+
+        self.input_code.setText(code)
+        self.input_name.setText(name)
+        self.input_price.setText(price)
+        self.input_amount.setText(amount)
+

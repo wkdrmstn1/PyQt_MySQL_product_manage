@@ -52,7 +52,7 @@ class MainWindow(QMainWindow):
         self.table.setEditTriggers(self.table.NoEditTriggers)
         self.table.verticalHeader().setVisible(False)
 
-        #vbox.addLayout(grid_box)
+        # vbox.addLayout(grid_box)
         vbox.addLayout(form_box1)
         vbox.addLayout(form_box2)
         vbox.addWidget(self.table)
@@ -140,7 +140,7 @@ class MainWindow(QMainWindow):
         else:
             QMessageBox.critical(self,"실패","수정실패")
 
-    def cell_clicked(self,row,col):
+    def cell_clicked(self,row):
         code = self.table.item(row,0).text()
         name = self.table.item(row,1).text()
         price = self.table.item(row,2).text()

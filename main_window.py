@@ -54,8 +54,8 @@ class MainWindow(QMainWindow):
 
         # vbox.addLayout(grid_box)
         vbox.addLayout(form_box1)
-        vbox.addLayout(form_box2)
         vbox.addWidget(self.table)
+        vbox.addLayout(form_box2)
 
         self.load_products()
 
@@ -81,7 +81,6 @@ class MainWindow(QMainWindow):
             header = self.table.horizontalHeader()
             header.setSectionResizeMode(QHeaderView.Stretch)
             
-
     # 제품 추가
     def add_product(self):
         code = self.input_code.text().strip()
@@ -129,6 +128,11 @@ class MainWindow(QMainWindow):
         if not target_code or not new_name or not new_price or not new_amount:
             QMessageBox.warning(self, "입력 오류", "모든 필드를 입력해주세요.")
             return
+        
+        if target_code != self.selected_code:
+            QMessageBox.critical(self,"실패","제품코드는 변경이 불가능합니다.")
+            return 
+
         ok = self.db.change_product(target_code,new_name,new_price,new_amount)
         if ok:
             QMessageBox.information(self,"완료","수정완료")
@@ -145,6 +149,8 @@ class MainWindow(QMainWindow):
         name = self.table.item(row,1).text()
         price = self.table.item(row,2).text()
         amount = self.table.item(row,3).text()
+
+        self.selected_code = code       # 제품코드변경 방지를 위한 code 저장 
 
         self.input_code.setText(code)
         self.input_name.setText(name)

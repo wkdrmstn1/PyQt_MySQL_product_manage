@@ -66,7 +66,7 @@ class DB:
 
                 print(f"제품코드 : '{target_code}'의 새로운 이름 '{new_name}'가격 '{new_price}' 개수'{new_amount}'")
                 return True
-            
+
             except Exception as e:
                 print(f"수정 실패 : {e}")
                 con.rollback()

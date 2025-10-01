@@ -14,7 +14,16 @@ class DB:
 
     def connect(self):
         return pymysql.connect(**self.config)
-    
+        
+    # 로그인 verify
+    def verify_user(self,username,password):
+        sql = "SELECT COUNT(*) FROM owner WHERE username=%s AND password=%s"
+        with self.connect() as con:
+            with con.cursor() as cur:
+                cur.execute(sql, (username,password))
+                count, = cur.fetchone()
+                return count == 1
+
     # 제품 조회
     def fetch_products(self):
         sql = "SELECT code, name, price, amount FROM products ORDER BY code"
